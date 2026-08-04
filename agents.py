@@ -17,8 +17,7 @@ class DQNAgent:
         self.action_dim = action_dim
         self.target_update_freq = target_update_freq
         self._train_steps = 0
-
-        # Placeholder network - provided so you can focus on the agent logic below.
+        
         self.q_net = DQN(state_size=state_dim, action_size=action_dim)
         self.target_net = copy.deepcopy(self.q_net)
         self.target_net.eval()
