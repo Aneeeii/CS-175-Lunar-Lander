@@ -31,5 +31,13 @@ class ReplayBuffer:
         # increment head (sets back to 0 once capacity is reached)
         self.head = (self.head + 1) % self.capacity
 
-    def sample(self, batch_size):
-        pass
+    def sample(self, n):
+        # return value is [[all_states], [all_actions], ...]
+        idxs = np.random.randint(0, self.size, size=n)
+        return (
+            self.states[idxs],
+            self.actions[idxs],
+            self.rewards[idxs],
+            self.next_states[idxs],
+            self.dones[idxs],
+        )
