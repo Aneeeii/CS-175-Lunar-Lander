@@ -32,12 +32,12 @@ class ReplayBuffer:
         self.head = (self.head + 1) % self.capacity
 
     def sample(self, n):
-        # return value is [[all_states], [all_actions], ...]
+        # return value is [[all states], [all actions], ...]
         idxs = np.random.randint(0, self.size, size=n)
         return (
-            self.states[idxs],
-            self.actions[idxs],
-            self.rewards[idxs],
-            self.next_states[idxs],
-            self.dones[idxs],
+            self.state[idxs],
+            self.action[idxs],
+            self.reward[idxs],
+            self.next_state[idxs],
+            self.done[idxs],
         )

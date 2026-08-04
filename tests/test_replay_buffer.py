@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 import numpy as np
 import pytest
 
@@ -72,3 +77,42 @@ class TestReplayBuffer:
         assert buffer.head == 1
         np.testing.assert_array_equal(buffer.state[0], new_state)
         assert buffer.action[0] == 99
+
+    def test_sample_output_shapes(self):
+        buffer = ReplayBuffer(cap=20)
+        for i in range(10):
+            buffer.store_transition(
+                np.full(ReplayBuffer.STATE_DIM, i), i, float(i), np.full(ReplayBuffer.STATE_DIM, i + 1), False
+            )
+
+        batch_size = 4
+        batch = buffer.sample(batch_size)
+
+        assert isinstance(batch, tuple)
+        assert len(batch) == 5
+
+        states, actions, rewards, next_states, dones = batch
+
+        assert states.shape == (batch_size, ReplayBuffer.STATE_DIM)
+        assert actions.shape == (batch_size,)
+        assert rewards.shape == (batch_size,)
+        assert next_states.shape == (batch_size, ReplayBuffer.STATE_DIM)
+        assert dones.shape == (batch_size,)
+
+    def test_sample_contains_valid_stored_data(self):
+        buffer = ReplayBuffer(cap=10)
+
+        for i in range(5):
+            buffer.store_transition(
+                np.full(ReplayBuffer.STATE_DIM, i), i, float(i), np.full(ReplayBuffer.STATE_DIM, i + 10), False
+            )
+
+        states, actions, rewards, next_states, dones = buffer.sample(n=20)
+
+        assert np.all((actions >= 0) & (actions < 5))
+        assert np.all((rewards >= 0.0) & (rewards < 5.0))
+
+        for idx in range(len(actions)):
+            act = int(actions[idx])
+            np.testing.assert_array_equal(states[idx], np.full(ReplayBuffer.STATE_DIM, act))
+            np.testing.assert_array_equal(next_states[idx], np.full(ReplayBuffer.STATE_DIM, act + 10))
