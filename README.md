@@ -10,3 +10,11 @@ Run verify.py to check that the environment works. A screen with the lander shou
 
 To run pytests, run:
   python -m pytest tests/
+
+Training/evaluation scaffold:
+  python train.py --mode baseline
+  python train.py --mode train
+  python train.py --mode all
+
+Example
+  python train.py --mode all --baseline-episodes 5 --train-episodes 10 --eval-episodes 5

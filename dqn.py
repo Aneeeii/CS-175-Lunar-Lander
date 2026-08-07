@@ -7,9 +7,9 @@ class DQN(nn.Module):
         super(DQN, self).__init__()
         self.network = nn.Sequential(
             nn.Linear(state_size, 64),
-            nn.ReLu(),
+            nn.ReLU(),
             nn.Linear(64, 64),
-            nn.ReLu(),
+            nn.ReLU(),
             nn.Linear(64, action_size)
         )
 
