@@ -4,6 +4,7 @@ from pathlib import Path
 
 import gymnasium as gym
 import numpy as np
+import torch
 
 from agents import DQNAgent
 from replay_buffer import ReplayBuffer
@@ -65,8 +66,17 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts):
         agent.epsilon_decay()
         results.append({"phase": "train", "episode": episode, "return": total_reward})
 
+        # if episode % 100 == 0:
+        #     torch.save(agent.q_net.state_dict(), f"checkpoint_ep{episode}.pth")
+        #     print(f"Checkpoint saved at episode {episode}")
+
+        torch.save(agent.q_net.state_dict(), "model.pth")
+
         if episode % 25 == 0:
             print_summary("Training", results)
+
+    # torch.save(agent.q_net.state_dict(), "model.pth")
+    # print("Model saved to model.pth")
 
     return agent, results
 
