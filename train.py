@@ -1,6 +1,7 @@
 import argparse
 import csv
 from pathlib import Path
+import time
 
 import gymnasium as gym
 import numpy as np
@@ -8,6 +9,7 @@ import torch
 
 from agents import DQNAgent
 from replay_buffer import ReplayBuffer
+import utils
 
 
 ENV_NAME = "LunarLander-v3"
@@ -34,15 +36,24 @@ def run_baseline(env, episodes, max_steps, seed):
     return results
 
 
-def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts):
+def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, stop_after=10):
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
 
     agent = DQNAgent(state_dim=state_dim, action_dim=action_dim)
     buffer = ReplayBuffer()
     results = []
+    steps_no_improv = 0
+    AVG_REWARD_WINDOW = 20
+    curr_avg = None
+    lthreshold_ep = -1
+
+    start_time = time.perf_counter()
 
     for episode in range(1, episodes + 1):
+        if lthreshold_ep != -1 and episode - lthreshold_ep > AVG_REWARD_WINDOW:
+            curr_avg = utils.calculate_avg_rewards(results[-AVG_REWARD_WINDOW:])
+
         state, _ = env.reset(seed=seed + episode)
         total_reward = 0
 
@@ -54,6 +65,8 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts):
             buffer.store_transition(state, action, reward, next_state, done)
 
             if buffer.size >= learning_starts:
+                if lthreshold_ep == -1:
+                    lthreshold_ep = episode
                 batch = buffer.sample(batch_size)
                 agent.update(batch)
 
@@ -75,8 +88,19 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts):
         if episode % 25 == 0:
             print_summary("Training", results)
 
+        if curr_avg is not None and curr_avg > utils.calculate_avg_rewards(results[-AVG_REWARD_WINDOW:]):
+            steps_no_improv += 1
+        else:
+            steps_no_improv = 0
+
+        if steps_no_improv >= stop_after:
+            break
+
     # torch.save(agent.q_net.state_dict(), "model.pth")
     # print("Model saved to model.pth")
+
+    run_time = time.perf_counter() - start_time
+    print(f"Agent ran for {run_time // 60} minutes and {run_time % 60}seconds.")
 
     return agent, results
 
