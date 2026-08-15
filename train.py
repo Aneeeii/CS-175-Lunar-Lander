@@ -44,14 +44,14 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
     buffer = ReplayBuffer()
     results = []
     steps_no_improv = 0
-    AVG_REWARD_WINDOW = 10
+    AVG_REWARD_WINDOW = 20
     curr_avg = None
     lthreshold_ep = -1
 
     start_time = time.perf_counter()
 
     for episode in range(1, episodes + 1):
-        if lthreshold_ep != -1 and episode - lthreshold_ep >= AVG_REWARD_WINDOW:
+        if lthreshold_ep != -1 and episode - lthreshold_ep > AVG_REWARD_WINDOW:
             curr_avg = utils.calculate_avg_rewards(results[-AVG_REWARD_WINDOW:])
 
         state, _ = env.reset(seed=seed + episode)
