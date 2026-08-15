@@ -1,6 +1,7 @@
 import argparse
 import csv
 from pathlib import Path
+import time
 
 import gymnasium as gym
 import numpy as np
@@ -46,6 +47,8 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
     AVG_REWARD_WINDOW = 10
     curr_avg = None
     lthreshold_ep = -1
+
+    start_time = time.perf_counter()
 
     for episode in range(1, episodes + 1):
         if lthreshold_ep != -1 and episode - lthreshold_ep >= AVG_REWARD_WINDOW:
@@ -95,6 +98,9 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
 
     # torch.save(agent.q_net.state_dict(), "model.pth")
     # print("Model saved to model.pth")
+
+    run_time = time.perf_counter() - start_time
+    print(f"Agent ran for {run_time // 60} minutes and {run_time % 60}seconds.")
 
     return agent, results
 
