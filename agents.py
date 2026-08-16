@@ -7,7 +7,7 @@ from dqn import DQN
 
 
 class DQNAgent:
-    def __init__(self, state_dim, action_dim, gamma=0.99, lr=1e-3,
+    def __init__(self, state_dim, action_dim, gamma=0.99, lr=1e-4,
                  epsilon=1.0, decay_rate=0.995, min_eps=0.01,
                  target_update_freq=1000):
         self.gamma = gamma
