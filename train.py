@@ -88,6 +88,10 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
         if episode % 25 == 0:
             print_summary("Training", results)
 
+        if episode % 100 == 0:
+            curr_time = time.perf_counter() - start_time
+            print(f"{episode} episodes ran. Time elapsed: {curr_time // 60} minutes, {curr_time % 60} seconds.")
+
         if curr_avg is not None and curr_avg > utils.calculate_avg_rewards(results[-AVG_REWARD_WINDOW:]):
             steps_no_improv += 1
         else:
