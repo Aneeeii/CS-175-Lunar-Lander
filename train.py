@@ -46,6 +46,7 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
     total_episodes = 0
 
     for i in range(num_phases):
+        print(f"Running phase {i}")
 
         lr = episodes[i][0]
         phase_ep = episodes[i][1]
@@ -55,7 +56,7 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
             agent.q_net.load_state_dict(torch.load("model.pth"))
             agent.target_net.load_state_dict(torch.load("model.pth"))
 
-        buffer = ReplayBuffer()
+        buffer = ReplayBuffer(cap=200000)
         steps_no_improv = 0
         AVG_REWARD_WINDOW = 20
         curr_avg = None
@@ -101,8 +102,8 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
             if episode % 25 == 0:
                 print_summary("Training", results)
 
-            if episode % 1000 == 0:
-                print(f"Training episode {episode}. Time elapsed = {time.perf_counter() - start_time:0.2f}")
+            if episode % 100 == 0:
+                print(f"Training episode {total_episodes}. Time elapsed = {time.perf_counter() - start_time:0.2f}")
 
             if curr_avg is not None and curr_avg > utils.calculate_avg_rewards(results[-AVG_REWARD_WINDOW:]):
                 steps_no_improv += 1
@@ -116,7 +117,7 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
         # print("Model saved to model.pth")
 
     run_time = time.perf_counter() - start_time
-    print(f"Agent ran for {run_time // 60} minutes and {run_time % 60}seconds.")
+    print(f"Agent ran for {run_time // 60} minutes and {run_time % 60:.2f}seconds.")
 
     return agent, results
 
