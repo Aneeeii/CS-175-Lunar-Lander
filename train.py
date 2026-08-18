@@ -160,7 +160,8 @@ def parse_args():
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--learning-starts", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--log-file", type=Path, default=Path("logs/training_log.csv"))
+    parser.add_argument("--log-file",type=Path,default=Path(f"logs/training_log_{datetime.now():%Y%m%d_%H%M%S}.csv"),)
+    parser.add_argument("--plot-file",type=Path,default=Path(f"logs/plot_{datetime.now():%Y%m%d_%H%M%S}.png"),)
     return parser.parse_args()
 
 
