@@ -18,3 +18,9 @@ Training/evaluation scaffold:
 
 Example
   python train.py --mode all --baseline-episodes 5 --train-episodes 10 --eval-episodes 5
+
+For training with different stages of variable learning rates where the agent will be trained on num_ep episdoes at a learning rate of learning_rate:
+  python train.py --lr-set learning_rate num_ep
+
+Example
+  python train.py --lr-set 0.0001 100000 --lr-set 0.00001 50000
