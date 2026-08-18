@@ -6,6 +6,7 @@ import time
 import gymnasium as gym
 import numpy as np
 import torch
+import matplotlib.pyplot as plt
 
 from agents import DQNAgent
 from replay_buffer import ReplayBuffer
@@ -188,6 +189,12 @@ def main():
         )
         all_results.extend(train_results)
         print_summary("Training final", train_results)
+        rew = [p['return'] for p in all_results if p['phase']=='train']
+        plt.plot(np.convolve(rew, np.ones(100)/100, mode='valid'))
+        plt.xlabel("Episode")
+        plt.ylabel("Average Reward (100-episode window)")
+        plt.title("Avg Reward on Lunar Lander")
+        plt.savefig(args.plot_file)
 
         eval_results = evaluate_agent(env, agent, args.eval_episodes, args.max_steps, args.seed)
         all_results.extend(eval_results)
