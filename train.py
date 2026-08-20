@@ -134,12 +134,13 @@ def evaluate_agent(env, agent, episodes, max_steps, seed):
 
 def print_summary(label, results):
     returns = [row["return"] for row in results]
+    eps = [row["episode"] for row in results]
     success_rate = np.mean([score >= SUCCESS_REWARD for score in returns])
     print(
         f"{label}: avg return = {np.mean(returns):.2f}, "
+        f"Episode = {eps[-1]}, "
         f"success rate = {success_rate * 100:.1f}%"
     )
-
 
 def save_log(rows, path):
     path.parent.mkdir(exist_ok=True)
