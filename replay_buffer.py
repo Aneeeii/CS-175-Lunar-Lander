@@ -4,7 +4,7 @@ class ReplayBuffer:
 
     STATE_DIM = 8  # state is an 8-dimensional vector as seen in the documentation
 
-    def __init__(self, cap=50000):
+    def __init__(self, cap=200000):
         # uses circular buffer array for storage for efficiency
         # size tracks the valid data slots for sampling before the buffer is full
         self.state = np.zeros((cap, self.STATE_DIM))
