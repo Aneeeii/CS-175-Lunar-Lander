@@ -11,10 +11,21 @@ from agents import DQNAgent
 from replay_buffer import ReplayBuffer
 import utils
 
+import matplotlib.pyplot as plt
+
 
 ENV_NAME = "LunarLander-v3"
 SUCCESS_REWARD = 200
 
+
+def update_plot(results, line, ax, fig):
+    returns = [r["return"] for r in results]
+    episodes = list(range(1, len(returns) + 1))
+    line.set_data(episodes, returns)
+    ax.relim()
+    ax.autoscale_view()
+    fig.canvas.draw()
+    fig.canvas.flush_events()
 
 def run_baseline(env, episodes, max_steps, seed):
     results = []
@@ -44,6 +55,13 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
     start_time = time.perf_counter()
     results = []
     total_episodes = 0
+
+    plt.ion()
+    fig, ax = plt.subplots()
+    line, = ax.plot([], [])
+    ax.set_xlabel("Episode")
+    ax.set_ylabel("Return")
+    ax.set_title("Training Curve")
 
     for i in range(num_phases):
         print(f"Running phase {i}")
@@ -104,6 +122,7 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
 
             if episode % 100 == 0:
                 print(f"Training episode {total_episodes}. Time elapsed = {time.perf_counter() - start_time:0.2f}")
+                update_plot(results, line, ax, fig)
 
             if curr_avg is not None and curr_avg > utils.calculate_avg_rewards(results[-AVG_REWARD_WINDOW:]):
                 steps_no_improv += 1
@@ -118,6 +137,9 @@ def train_agent(env, episodes, max_steps, seed, batch_size, learning_starts, sto
 
     run_time = time.perf_counter() - start_time
     print(f"Agent ran for {run_time // 60} minutes and {run_time % 60:.2f}seconds.")
+
+    update_plot(results, line, ax, fig)
+    fig.savefig("training_curve.png")
 
     return agent, results
 
